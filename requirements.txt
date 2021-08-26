@@ -1,0 +1,6 @@
+click
+matplotlib
+pandas
+psutil
+seaborn
+watchdog
