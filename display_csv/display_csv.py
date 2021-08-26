@@ -19,8 +19,8 @@ from watchdog.observers import Observer
 
 DYE_PLOT = {"ROX": 0, "VIC": 1, "FAM": 2}
 DYE_HEAT = {0: "ROX", 1: "VIC", 2: "FAM"}
-DIM_X = 4  # 1..19 (20)
-DIM_Y = 3  # 'P'   (16)
+DIM_X = 20  # 1..19
+DIM_Y = 16  # 'P'
 WELL_ROWS = list(string.ascii_uppercase[:DIM_Y])
 WELL_COLS = [i for i in range(1, DIM_X)]
 HEAT_TITLES = {0: "ROX values", 1: "VIC values", 2: "FAM values", 3: "Normalized FAM values", 4: "Normalized VIC values"}
