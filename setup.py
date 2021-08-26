@@ -7,5 +7,5 @@ setup(
    author='Alexander Senf',
    author_email='ajsenf@gmail.com',
    packages=['display_csv'],
-   install_requires=['click', 'matplotlib', 'pandas', 'psutils', 'seaborn', 'watchdog'],
+   install_requires=['click', 'matplotlib', 'pandas', 'psutil', 'seaborn', 'watchdog'],
 )
