@@ -8,8 +8,8 @@ The project can be run from this repository:
 
     git clone https://github.com/AlexanderSenf/UKBC_live_gui.git
     cd UKBC_live_gui
-    pip install -3 requirements [or pip3]
-    python display_csv.py [or python3]
+    pip install -r requirements [or pip3]
+    python display_csv/display_csv.py [or python3]
 It should also be possible to `pip` install it from GitHub directly:
 ```bash
 pip install git+git://github.com/AlexanderSenf/UKBC_live_gui.git#egg=display_csv
