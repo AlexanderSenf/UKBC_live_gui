@@ -19,8 +19,8 @@ from watchdog.observers import Observer
 
 DYE_PLOT = {"ROX": 0, "VIC": 1, "FAM": 2}
 DYE_HEAT = {0: "ROX", 1: "VIC", 2: "FAM"}
-DIM_X = 20  # 1..19
-DIM_Y = 16  # 'P'
+DIM_X = 25  # 1..25 + Index 
+DIM_Y = 16  # 'A' .. 'P'   
 WELL_ROWS = list(string.ascii_uppercase[:DIM_Y])
 WELL_COLS = [i for i in range(1, DIM_X)]
 HEAT_TITLES = {0: "ROX values", 1: "VIC values", 2: "FAM values", 3: "Normalized FAM values", 4: "Normalized VIC values"}
@@ -81,11 +81,11 @@ class DataFile:
 
     def dataframe(self, dye_key):
         if dye_key == 3:  # Normalized FAM
-            df = self.dye_plates["FAM"].astype(dtype=float).div(self.dye_plates["ROX"].astype(dtype=float))
+            df = self.dye_plates["FAM"].div(self.dye_plates["ROX"])
         elif dye_key == 4:  # Normalized VIC
-            df = self.dye_plates["VIC"].astype(dtype=float).div(self.dye_plates["ROX"].astype(dtype=float))
+            df = self.dye_plates["VIC"].div(self.dye_plates["ROX"])
         else:
-            df = self.dye_plates[DYE_HEAT[dye_key]].astype(dtype=float)
+            df = self.dye_plates[DYE_HEAT[dye_key]]
         # Apply Vmin, Vmax limits to returned values
         return df.clip(HEAT_BOUNDS[dye_key][0], HEAT_BOUNDS[dye_key][1])
 
@@ -109,11 +109,11 @@ class DataFile:
                     # Assign values to correct dye
                     dye_key = row[1]
                     self.dye_values[dye_key] = set()
-                    self.dye_plates[dye_key] = pd.DataFrame(columns=WELL_COLS, index=WELL_ROWS)
-                else:
+                    self.dye_plates[dye_key] = pd.DataFrame(columns=WELL_COLS, index=WELL_ROWS, dtype='float')
+                elif row[0] in WELL_ROWS:
                     # Store all values in Set (for scatter) and DataFrame (for heatmap)
-                    self.dye_values[dye_key].update(set(row[1:]))
-                    self.dye_plates[dye_key].loc[row[0]] = row[1:]
+                    self.dye_values[dye_key].update(set(row[1:-1]))
+                    self.dye_plates[dye_key].loc[row[0]] = [float(i) for i in row[1:-1]]
 
 
 # Live Graph Functionality
@@ -129,7 +129,7 @@ class FileWatchLoop:
 
     def run(self):
         # Load existing csv files in directory into list
-        _files = [DataFile(Path(self.dirPath, f)) for f in os.listdir(self.dirPath) if f.endswith(".csv")]
+        _files = [DataFile(Path(self.dirPath, f)) for f in os.listdir(self.dirPath) if f.endswith(".csv_p")]
 
         # Observe changes in the directory
         event_handler = Handler(_files)
@@ -193,7 +193,7 @@ def gen_heatmaps(dirpath, interval=30):
 
     try:
         while True:
-            files = [DataFile(Path(dirpath, f)) for f in os.listdir(dirpath) if f.endswith(".csv")]
+            files = [DataFile(Path(dirpath, f)) for f in os.listdir(dirpath) if f.endswith(".csv_p")]
             for f in files:  # Sequentially show heatmaps for all files
                 for key in range(0, 5):  # Sequentially show heatmaps for all 5 subgraphs
                     sns.heatmap(
